@@ -2,6 +2,10 @@
 A easy way to download torrents from private tracker sites with poor coding.
 
 Update log:
+2023/08/27
+1. Made modifications to the "def find_free:" to only return free torrents.
+2. Added an additional parameter called "download_amount" that allows you to determine the number of free torrents to download before reaching a limit.
+
 2019/06/29
 1. Integrating the function of downloading in NexusPHP sites, NexusPHP but encrypted download url sites and GazellePHP sites in one script. (Only tested in MT(normal nexusphp), HDC(encrypted) & DIC(gzphp) , not compatible with PTP)
 2. Added an function to record the torrents has downloaded by creating an .log file in monitor path.
@@ -100,6 +104,11 @@ accept_encoding = ''
 # like: torrents_amount = 10
 # We always grab all the torrents in the whole page, but you can define the amount of grabing torrents by defining the variable below 
 torrents_amount = 0
+
+#"download_amount" that allows you to determine the number of free torrents to download before reaching a limit.
+#定义免费种子的下载个数，可以配合torrents_amount使用，设置5就是下载前5个免费种子。
+# like: download_amount = 5
+download_amount = 5
 
 # You don't need to change this variables unless you cannot download from your GAZELLE site
 # 这是gz架构的网站才看到的东西，一般不用管。不过很多gz站应该都不一样，想抓gz站，要改的东西就比较多了，不介绍了
