@@ -1,23 +1,38 @@
+#!/usr/bin/python3
 import bs4
 import requests
 import os
 import lxml
 import re
 
+#如果你是在馒头pt上使用，只需要修改"site_cookie", "user_agent", "monitor_path", 自行决定是否修改"torrents_amount", "download_amount".
 # Complete the variables below:
 # Some examples: 
 #site_name = "M-TEAM"
 #site_url = "https://tp.m-team.cc/torrents.php"
-#site_cookie = "c_lang_folder=cht; tp=I2ODOGYNDFmZDdASDASODU3ZDA1ZU3ZDAYxNDFmZDdhYWRhZmRlOA%3D%3D"
-#url_half = "https://tp.m-team.cc/"
+#site_cookie = "c_langt; tp=I2ODOGYNDFmZDdASDASODU3ZDA1ZU3ZDAYxNDFmZDdhYWRA%3D%3D"
+#url_half = "https://kp.m-team.cc/"
 
-site_name = "xxxxx"
-site_url = "https://xxxxxxxxx/torrents.php"
-site_cookie = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+site_name = "M-TEAM"
+site_url = "https://kp.m-team.cc/torrents.php"
+site_cookie = "c_lang; "cookies""
 
 # It always would be the first part of your site, like: url_half = "https://tp.m-team.cc/"
-url_half = "https://xxxxxxxxxxxxxxxxx/"
+url_half = "https://kp.m-team.cc/"
+# monitor_path = r'/path/to/torrents/'
+monitor_path = r'/path/to/torrents/'
+user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36'
+referer = ''
+host = ''
 
+# Only if you just want to check the first 10 torrents is free in the page and download the free torrents in this small amount, please change it to 10
+# like: torrents_amount = 10
+# We always grab all the torrents in the whole page, but you can define the amount of grabing torrents by defining the variable below 
+torrents_amount = 0
+
+#"download_amount" that allows you to determine the number of free torrents to download before reaching a limit.
+# like: download_amount = 5
+download_amount = 5
 
 # If your site is a Gazelle Site, please change this varible to True, like: is_gazelle = True
 is_gazelle = False
@@ -34,7 +49,6 @@ is_encrypted = False
 # If you couldn't downlaod the torrents to your directory where the *.py script is, you could just define the variables below. Make sure the format of your path because of the difference between Windows and Linux.
 # Example of windows:              monitor_path = r'C:\\Users\\DELL-01\\Desktop\\'       Don't forget the last '\\'
 # Example of Linux and MacOS:      monitor_path = r'/home/user/Downloads/'               Don't forget the last '/'
-monitor_path = r''
 
 
 # Other informations for safer sites. Complete it if you cannot download torrents.
@@ -43,11 +57,6 @@ monitor_path = r''
 #referer = 'https://tp.m-team.cc/login.php'
 #host = 'tp.m-team.cc'
 
-user_agent = ''
-
-# You don't need to define the variables shows below unless you couldn't download the torrents after defined the above one
-referer = ''
-host = ''
 
 # You don't need to define the variables shows below unless you couldn't download the torrents after defined the above two
 upgrade_insecure_requests = ''
@@ -62,10 +71,7 @@ origin = ''
 accept_encoding = ''
 
 
-# Only if you just want to check the first 10 torrents is free in the page and download the free torrents in this small amount, please change it to 10
-# like: torrents_amount = 10
-# We always grab all the torrents in the whole page, but you can define the amount of grabing torrents by defining the variable below 
-torrents_amount = 0
+
 
 # You don't need to change this variables unless you cannot download from your GAZELLE site
 # check this value from the page source code
@@ -153,15 +159,16 @@ class Torrents():
         '''
         A function to download a free torrent.
         '''
-        down_url = url_half + self.torrent[3] #+ url_last
+        down_url = url_half + self.torrent[3]
+        # print("###",down_url) #+ url_last
         if self.torrent[0]:
             res = requests_check_headers(down_url)
 #vvvvvvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvvvvvvv#
             print('\n\nPrinting the download statements: ')
-            try:
-                print('Downloading' + self.__str__())
-            except:
-                print('Cannot print the torrent name.')
+            # try:
+            #     print('Downloading' + self.__str__())
+            # except:
+            #     print('Cannot print the torrent name.')
             try:
                 print('Writing torrent to your path ...')
 #^^^^^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^^^^^^#
@@ -188,11 +195,11 @@ class Torrents():
             # down_url = soup.select_one('#clip_target')['href']    # a faster way For HDC only
             res = requests_check_headers(down_url)
 #vvvvvvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvvvvvvv#
-            print('\n\nPrinting the download statements: ')
-            try:
-                print('Downloading' + self.__str__())
-            except:
-                print('Cannot print the torrent name.')
+            # print('\n\nPrinting the download statements: ')
+            # try:
+            #     print('Downloading' + self.__str__())
+            # except:
+            #     print('Cannot print the torrent name.')
             try:
                 print('Writing torrent to your path ...')
 #^^^^^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^^^^^^#
@@ -212,23 +219,35 @@ class NexusPage():
     def __init__(self, torrents_class_name):
         self.torrents_list = []
         self.processed_list = []
+        self.processed_list2 = []
         self.torrents_class_name = torrents_class_name
+        # print("torrents_class_name", torrents_class_name)
         
         # Requesting page information of torrents by session
         res = requests_check_headers(site_url)
         soup = bs4.BeautifulSoup(res.text,'lxml')
-        self.processed_list = soup.select(self.torrents_class_name)
+        # self.processed_list = soup.select(self.torrents_class_name)
+        self.processed_list = soup.select('.torrentname')
+     
+        # print("processed_list", self.processed_list)
 #vvvvvvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvvvvvvv#
-        print('\n\nThe website shows: ')
-        try:
-            print(str(soup))
-        except:
-            print('Cannot print soup')
-        print('\n\nThe torrents informations(processed_list) shows below: ')
-        try:
-            print(self.processed_list)
-        except:
-            print('Cannot print processed_list')
+        # print('\n\nThe website shows: ')
+        # try:
+        #     print(str(soup))
+        # except:
+        #     print('Cannot print soup')
+
+        # try:
+        #     with open('website_content.txt', 'w', encoding='utf-8') as f:
+        #         f.write(str(soup))
+        # except:
+        #     print('Cannot save soup to file')
+
+        # # print('\n\nThe torrents informations(processed_list) shows below: ')
+        # try:
+        #     print(self.processed_list)
+        # except:
+        #     print('Cannot print processed_list')
 #^^^^^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^^^^^^#
     def __str__(self):
         return self.processed_list
@@ -239,7 +258,7 @@ class NexusPage():
         for entry in self.processed_list:            
             details = entry.a['href']
             torrent_id = re.search(pattern, details).group(1)
-            
+            # print("entry:", entry)
             #if torrent is free:
             if entry.find(class_=free_tag) or entry.find(class_=free_tag2):
                 last_download_url = 'NULL'
@@ -249,13 +268,13 @@ class NexusPage():
                         last_download_url = subentry.a['href']
                 free_state.append((True, torrent_id, details, last_download_url))
             else:
-                free_state.append((False, torrent_id, details, "NULL"))
+                continue
 #vvvvvvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvvvvvvv#
-        print("\n\nThe torrents' free state tuples list shows below: ")
-        try:
-            print(free_state)
-        except:
-            print('Cannot print the free_tuple_list')
+        # print("\n\nThe torrents' free state tuples list shows below: ")
+        # try:
+        #     print(free_state)
+        # except:
+        #     print('Cannot print the free_tuple_list')
 #^^^^^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^^^^^^#
         return free_state
 #####
@@ -278,13 +297,15 @@ class GazellePage():
         for entry in self.torrents_list:
             if entry['colspan'] == colspan:
                 self.processed_list.append(entry)
+                
+        # print("processed_list:", processed_list)        
 #vvvvvvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvvvvvvv#
-        print('\n\nThe website shows: ')
-        try:
-            print(str(soup))
-        except:
-            print('Cannot print soup')
-        print('\n\nThe torrents informations(processed_list) shows below: ')
+        # print('\n\nThe website shows: ')
+        # try:
+        #     print(str(soup))
+        # except:
+        #     print('Cannot print soup')
+        # print('\n\nThe torrents informations(processed_list) shows below: ')
         try:
             print(self.processed_list)
         except:
@@ -305,50 +326,56 @@ class GazellePage():
             if entry.find(class_=free_tag) or entry.find(class_=free_tag2):
                 free_state.append((True, torrent_id, details, last_download_url))
             else:
-                free_state.append((False, torrent_id, details, last_download_url))
+                continue
+                # free_state.append((False, torrent_id, details, last_download_url))
 #vvvvvvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvvvvvvv#
-        print("\n\nThe torrents' free state tuples list shows below: ")
-        try:
-            print(free_state)
-        except:
-            print('Cannot print the free_tuple_list')
+        # print("\n\nThe torrents' free state tuples list shows below: ")
+        # try:
+        #     print(free_state)
+        # except:
+        #     print('Cannot print the free_tuple_list')
 #^^^^^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^# Command for debug #^^^^^^^^^^^^^^^^^^^^^^#
         return free_state
 #####
-def download_free(torrents_amount, task_list, monitor_path):
+def download_free(torrents_amount, task_list, monitor_path, download_amount):
     if os.path.isfile(monitor_path + "downloaded_list.log") == False:
         with open(monitor_path + "downloaded_list.log", 'w') as f:
             f.write("A list shows the torrents have been downloaded:\n")
-
+    count = 0   
     if not torrents_amount:
         for torrent in task_list:
             torrent_name = str(Torrents(torrent))
-            with open(monitor_path + "downloaded_list.log", 'r') as f:
-                downloaded = f.read()
-                if torrent_name in downloaded:
-                    continue
-            with open(monitor_path + "downloaded_list.log", 'a') as f:
-                f.write(torrent_name)
+            if count < download_amount:
+                with open(monitor_path + "downloaded_list.log", 'r') as f:
+                    downloaded = f.read()
+                    if torrent_name in downloaded:
+                        acount += 1
+                        continue
+                with open(monitor_path + "downloaded_list.log", 'a') as f:
+                    f.write(torrent_name)
 
-            if os.path.isfile(monitor_path + torrent_name) == False:
-                Torrents(torrent).download()
-            else:
-                continue
+                if os.path.isfile(monitor_path + torrent_name) == False:
+                    count += 1
+                    Torrents(torrent).download()
+                else:
+                    continue
     else:
         for torrent in task_list[0:torrents_amount:1]:
             torrent_name = str(Torrents(torrent))
+            if count < download_amount:
+                with open(monitor_path + "downloaded_list.log", 'r') as f:
+                    downloaded = f.read()
+                    if torrent_name in downloaded:
+                        acount += 1
+                        continue
+                with open(monitor_path + "downloaded_list.log", 'a') as f:
+                    f.write(torrent_name)
 
-            with open(monitor_path + "downloaded_list.log", 'r') as f:
-                downloaded = f.read()
-                if torrent_name in downloaded:
+                if os.path.isfile(monitor_path + torrent_name) == False:
+                    count += 1
+                    Torrents(torrent).download()
+                else:
                     continue
-            with open(monitor_path + "downloaded_list.log", 'a') as f:
-                f.write(torrent_name)
-
-            if os.path.isfile(monitor_path + torrent_name) == False:
-                Torrents(torrent).download()
-            else:
-                continue
 #####
 def download_encrypted_free(torrents_amount, task_list, monitor_path, download_class_name):
     if os.path.isfile(monitor_path + "downloaded_list.log") == False:
@@ -392,10 +419,11 @@ my_headers = get_my_headers(my_headers = {})
 
 if not is_gazelle:
     if not is_encrypted:
+        # print("#####")
         task = NexusPage(torrents_class_name)   ## The site would inform you that you have loged in this site when you run Page() at the very beginning.
         task = NexusPage(torrents_class_name)   ## So just run this command again to make sure that you can get the informations of torrents page.
         task_list = task.find_free(free_tag,free_tag2)
-        download_free(torrents_amount, task_list, monitor_path)
+        download_free(torrents_amount, task_list, monitor_path, download_amount)
     else:
         task = NexusPage(HDC_torrents_class_name)   ## The site would inform you that you have loged in this site when you run Page() at the very beginning.
         task = NexusPage(HDC_torrents_class_name)   ## So just run this command again to make sure that you can get the informations of torrents page.
