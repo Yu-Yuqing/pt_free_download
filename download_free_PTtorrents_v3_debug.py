@@ -28,7 +28,7 @@ host = ''
 # Only if you just want to check the first 10 torrents is free in the page and download the free torrents in this small amount, please change it to 10
 # like: torrents_amount = 10
 # We always grab all the torrents in the whole page, but you can define the amount of grabing torrents by defining the variable below 
-torrents_amount = 0
+torrents_amount = 10
 
 #"download_amount" that allows you to determine the number of free torrents to download before reaching a limit.
 # like: download_amount = 5
@@ -71,11 +71,7 @@ origin = ''
 accept_encoding = ''
 
 
-# Only if you just want to check the first 10 torrents is free in the page and download the free torrents in this small amount, please change it to 10
-# like: torrents_amount = 10
-# We always grab all the torrents in the whole page, but you can define the amount of grabing torrents by defining the variable below 
-torrents_amount = 10
-download_amount = 3
+
 
 # You don't need to change this variables unless you cannot download from your GAZELLE site
 # check this value from the page source code
