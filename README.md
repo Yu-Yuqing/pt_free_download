@@ -10,3 +10,7 @@ Update log:
 2019/06/04
 1. Added some lines to ensure that the script could download torrents correctly.
 2. Added a new script to handle the encrypted torrent's download url.
+
+2023/08/27
+1. Made modifications to the "def find_free:" to only return free torrents.
+2. Added an additional parameter called "download_amount" that allows you to determine the number of free torrents to download before reaching a limit.
