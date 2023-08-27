@@ -71,7 +71,11 @@ origin = ''
 accept_encoding = ''
 
 
-
+# Only if you just want to check the first 10 torrents is free in the page and download the free torrents in this small amount, please change it to 10
+# like: torrents_amount = 10
+# We always grab all the torrents in the whole page, but you can define the amount of grabing torrents by defining the variable below 
+torrents_amount = 10
+download_amount = 3
 
 # You don't need to change this variables unless you cannot download from your GAZELLE site
 # check this value from the page source code
@@ -268,7 +272,7 @@ class NexusPage():
                         last_download_url = subentry.a['href']
                 free_state.append((True, torrent_id, details, last_download_url))
             else:
-                continue
+                free_state.append((False, torrent_id, details, last_download_url))
 #vvvvvvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvv# Command for debug #vvvvvvvvvvvvvvvvvvvvvv#
         # print("\n\nThe torrents' free state tuples list shows below: ")
         # try:
@@ -345,7 +349,7 @@ def download_free(torrents_amount, task_list, monitor_path, download_amount):
     if not torrents_amount:
         for torrent in task_list:
             torrent_name = str(Torrents(torrent))
-            if count < download_amount:
+            if count < download_amount and torrent[0]== True:
                 with open(monitor_path + "downloaded_list.log", 'r') as f:
                     downloaded = f.read()
                     if torrent_name in downloaded:
@@ -362,11 +366,11 @@ def download_free(torrents_amount, task_list, monitor_path, download_amount):
     else:
         for torrent in task_list[0:torrents_amount:1]:
             torrent_name = str(Torrents(torrent))
-            if count < download_amount:
+            if count < download_amount and torrent[0]== True:
                 with open(monitor_path + "downloaded_list.log", 'r') as f:
                     downloaded = f.read()
                     if torrent_name in downloaded:
-                        acount += 1
+                        count += 1
                         continue
                 with open(monitor_path + "downloaded_list.log", 'a') as f:
                     f.write(torrent_name)
